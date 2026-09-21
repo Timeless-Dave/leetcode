@@ -4,25 +4,26 @@ from typing import List
 class Solution:
 
   def resultArray(self, nums: List[int], k: int) -> List[int]:
-    dp = [0] * k
     result = [0] * k
+    # dp[v] stores the number of subarrays ending at the previous index with product % k == v
+    dp = [0] * k
 
     for num in nums:
       m = num % k
-      new_dp = [0] * k
+      next_dp = [0] * k
 
-      # Extend existing subarrays ending at the previous element
-      for r in range(k):
-        cnt = dp[r]
-        if cnt:
-          new_dp[(r * m) % k] += cnt
+      # 1. Start a new subarray of length 1 with `num`
+      next_dp[m] += 1
 
-      # Start a new subarray with the current element
-      new_dp[m] += 1
-      dp = new_dp
+      # 2. Extend previous subarrays
+      for v in range(k):
+        if dp[v]:
+          next_dp[(v * m) % k] += dp[v]
 
-      # Accumulate all subarrays ending at the current element
-      for r in range(k):
-        result[r] += dp[r]
+      # 3. Add counts of all subarrays ending at the current index to result
+      for v in range(k):
+        result[v] += next_dp[v]
+
+      dp = next_dp
 
     return result
