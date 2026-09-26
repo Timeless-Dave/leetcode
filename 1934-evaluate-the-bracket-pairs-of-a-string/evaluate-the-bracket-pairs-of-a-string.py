@@ -1,25 +1,15 @@
 class Solution:
     def evaluate(self, s: str, knowledge: list[list[str]]) -> str:
-        # Convert knowledge into a dictionary for O(1) lookups
-        know_dict = {k: v for k, v in knowledge}
+        # dict() is slightly faster and more memory-efficient than a comprehension
+        d = dict(knowledge) 
         
-        ans = []
-        curr_key = []
-        in_bracket = False
+        # Split the string by the opening bracket
+        parts = s.split('(')
         
-        for char in s:
-            if char == '(':
-                in_bracket = True
-            elif char == ')':
-                in_bracket = False
-                key = "".join(curr_key)
-                # Append the known value or "?" if it doesn't exist
-                ans.append(know_dict.get(key, "?"))
-                curr_key = []  # Reset for the next key
-            else:
-                if in_bracket:
-                    curr_key.append(char)
-                else:
-                    ans.append(char)
-                    
-        return "".join(ans)
+        # Process every part that came after an opening bracket
+        for i in range(1, len(parts)):
+            key, rest = parts[i].split(')')
+            # Replace the part in-place to save memory
+            parts[i] = d.get(key, '?') + rest 
+            
+        return "".join(parts)
