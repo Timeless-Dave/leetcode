@@ -1,15 +1,27 @@
 class Solution:
     def evaluate(self, s: str, knowledge: list[list[str]]) -> str:
-        # dict() is slightly faster and more memory-efficient than a comprehension
-        d = dict(knowledge) 
+        d = dict(knowledge)
+        ans = []
+        prev = 0
         
-        # Split the string by the opening bracket
-        parts = s.split('(')
-        
-        # Process every part that came after an opening bracket
-        for i in range(1, len(parts)):
-            key, rest = parts[i].split(')')
-            # Replace the part in-place to save memory
-            parts[i] = d.get(key, '?') + rest 
+        while True:
+            # Find the next opening bracket
+            start = s.find('(', prev)
+            if start == -1:
+                # No more brackets, append the rest of the string and finish
+                ans.append(s[prev:])
+                break
+                
+            # Append the characters before the bracket
+            ans.append(s[prev:start])
             
-        return "".join(parts)
+            # Find the closing bracket
+            end = s.find(')', start + 1)
+            
+            # Lookup the key (slicing the string between the brackets)
+            ans.append(d.get(s[start + 1:end], '?'))
+            
+            # Update the pointer for the next iteration
+            prev = end + 1
+            
+        return "".join(ans)
