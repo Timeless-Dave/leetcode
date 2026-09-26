@@ -1,27 +1,20 @@
 class Solution:
     def evaluate(self, s: str, knowledge: list[list[str]]) -> str:
         d = dict(knowledge)
-        ans = []
-        prev = 0
         
-        while True:
-            # Find the next opening bracket
-            start = s.find('(', prev)
-            if start == -1:
-                # No more brackets, append the rest of the string and finish
-                ans.append(s[prev:])
-                break
-                
-            # Append the characters before the bracket
-            ans.append(s[prev:start])
+        # Split once to separate out the keys
+        parts = s.split('(')
+        
+        # The first part is always standard text (before any bracket)
+        res = [parts[0]]
+        
+        for part in parts[1:]:
+            # Split exactly once at the closing bracket
+            key, rest = part.split(')')
             
-            # Find the closing bracket
-            end = s.find(')', start + 1)
+            # Append the dictionary lookup and the rest of the string separately
+            # This completely avoids using the `+` operator, saving memory overhead.
+            res.append(d.get(key, '?'))
+            res.append(rest)
             
-            # Lookup the key (slicing the string between the brackets)
-            ans.append(d.get(s[start + 1:end], '?'))
-            
-            # Update the pointer for the next iteration
-            prev = end + 1
-            
-        return "".join(ans)
+        return "".join(res)
