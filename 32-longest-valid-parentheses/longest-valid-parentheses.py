@@ -1,23 +1,33 @@
 class Solution:
     def longestValidParentheses(self, s: str) -> int:
-        max_len = 0
-        # Initialize stack with -1 to handle valid substrings starting at index 0
-        stack = [-1] 
+        left = right = max_len = 0
         
-        for i, char in enumerate(s):
+        # Left to Right pass
+        for char in s:
             if char == '(':
-                # Push the index of the open parenthesis
-                stack.append(i)
+                left += 1
             else:
-                # Pop the top element for a matching close parenthesis
-                stack.pop()
+                right += 1
+            
+            if left == right:
+                max_len = max(max_len, 2 * right)
+            elif right > left:
+                # Invalid state: more ')' than '('
+                left = right = 0
                 
-                if not stack:
-                    # If the stack is empty, it means we have an unmatched ')'
-                    # Push its index to serve as the new base for future valid strings
-                    stack.append(i)
-                else:
-                    # The length is the current index minus the index at the top of the stack
-                    max_len = max(max_len, i - stack[-1])
-                    
+        left = right = 0
+        
+        # Right to Left pass
+        for char in reversed(s):
+            if char == '(':
+                left += 1
+            else:
+                right += 1
+            
+            if left == right:
+                max_len = max(max_len, 2 * left)
+            elif left > right:
+                # Invalid state: more '(' than ')' when going backwards
+                left = right = 0
+                
         return max_len
